@@ -436,6 +436,7 @@
 
                 currentTime += (frameDelay * speedMultiplier) / 1000; // Increment currentTime based on speed multiplier
                 captureFrame();
+                console.log('Frame captured');
             };
         } else {
             // Render the GIF
@@ -448,6 +449,7 @@
                 progressBar.style.display = 'none'; // Hide progress bar when done
                 document.getElementById('frameContainer').style.display = 'block';
                 document.getElementById('videoPreview').style.display = 'none';
+                console.log('GIF ready for download');
             });
             gif.render();
         }
