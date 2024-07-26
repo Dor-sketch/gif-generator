@@ -296,20 +296,21 @@
                     </path>
                 </svg>
             </a>
-            <a href="https://dorpascal.com" aria-label="Dor Pascal's Portfolio" target="_blank" rel="noopener">
+  <a href="https://dorpascal.com" aria-label="Dor Pascal's Portfolio" target="_blank" rel="noopener">
                 <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0,0,256,256">
                     <g transform="translate(38.4,38.4) scale(0.7,0.7)">
                         <g fill="none" fill-rule="nonzero" stroke="#808080" stroke-width="8" stroke-linecap="butt"
                             stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
-                            font-family="none" font-size="none" style="mix-blend-mode: normal">
+                            font-family="none" font-size="none"
+                            style="mix-blend-mode: normal">
                             <path
-                                d="M-14.08963,305.61204c-19.61848,0-35.52241,-15.90392-35.52241,-35.522
-41v-284.17926c0,-19.61848 15.90392,-35.52241 35.52241,-35.52241h284.17926c19.61848,0 35.52241,15.90392 35.52241,35.52241v284.17926c0,19.61848-15.90392,35.52241-35.52241,35.52241z"
+                                d="M-14.08963,305.61204c-19.61848,0-35.52241,-15.90392-35.52241,-35.52241v-284.17926c0,-19.61848 15.90392,-35.52241 35.52241,-35.52241h284.17926c19.61848,0 35.52241,15.90392 35.52241,35.52241v284.17926c0,19.61848-15.90392,35.52241-35.52241,35.52241z"
                                 id="shape"></path>
                         </g>
                         <g fill-opacity="0.85882" fill-rule="nonzero" stroke="none" stroke-width="1"
                             stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray=""
-                            stroke-dashoffset="0" font-family="none" font-size="none" style="mix-blend-mode: normal">
+                            stroke-dashoffset="0" font-family="none" font-size="none"
+                             style="mix-blend-mode: normal">
                             <g transform="scale(8,8)">
                                 <rect x="5" y="2" width="4" height="28"></rect>
                                 <path
@@ -422,6 +423,7 @@
     function captureFrame() {
         console.log(currentTime);
         if (currentTime < duration) {
+            console.log('Capturing frame');
             videoPreview.currentTime = currentTime;
             videoPreview.onseeked = function () {
                 ctx.drawImage(videoPreview, 0, 0, canvas.width, canvas.height);
@@ -438,6 +440,7 @@
         } else {
             // Render the GIF
             gif.on('finished', function (blob) {
+                console.log('GIF rendered');
                 outputGif.src = URL.createObjectURL(blob);
                 outputGif.style.display = 'block';
                 downloadLink.href = URL.createObjectURL(blob);
