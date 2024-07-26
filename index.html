@@ -13,10 +13,9 @@
         gtag('js', new Date());
         gtag('config', 'G-T7HFKFX0PR');
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
-    <script>
-        GIF.prototype.workerScript = 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js';
-    </script>
+    <script src="gif.js"></script>
+    <script src="gif.worker.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- SEO and Metadata -->
     <meta name="author" content="Dor Pascal">
     <meta name="generator" content="vscode">
@@ -237,6 +236,7 @@
 
         #videoPreview, #outputGif {
             margin: 0 auto;
+            max-width: 100%;
         }
     </style>
 </head>
@@ -357,7 +357,7 @@
             const outputGif = document.getElementById('outputGif');
             const downloadLink = document.getElementById('downloadLink');
 
-            videoPreview.muted = true;
+            videoPreview.style.display = 'none';
     const resolutionSelect = document.getElementById('resolution');
     const fpsInput = document.getElementById('fps');
     const loopCountInput = document.getElementById('loopCount');
@@ -407,11 +407,13 @@
 
                 const gif = new GIF({
                     workers: window.navigator.hardwareConcurrency || 2,
-                    quality: 10,
+                    quality: 1,
                     width: canvas.width,
                     height: canvas.height,
-                    workerScript: 'gif.worker.js',
-                    loop: loopCount
+                    workerScript: './gif.worker.js',
+                    loop: loopCount,
+                    dither: false,
+
                 });
 
     const duration = Math.min(videoPreview.duration, 10); // Max 10 seconds
