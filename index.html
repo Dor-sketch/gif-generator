@@ -15,7 +15,6 @@
     </script>
     <script src="gif.js"></script>
     <script src="gif.worker.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- SEO and Metadata -->
     <meta name="author" content="Dor Pascal">
     <meta name="generator" content="vscode">
@@ -263,7 +262,7 @@
         <div class="settings">
         <label>
     Speed multiplier:
-    <input type="number" id="speedMultiplier" name="speedMultiplier" value="1" min="0.1" max="5" step="0.1">
+    <input type="number" id="speedMultiplier" name="speedMultiplier" value="10" min="0.1" max="20" step="0.1">
 </label>
             <label>
   Resolution:
@@ -275,11 +274,11 @@
             </label>
             <label>
                 Frames per second (FPS):
-                <input type="number" id="fps" name="fps" value="10" min="1" max="60">
+                <input type="number" id="fps" name="fps" value="1" min="1" max="60">
             </label>
             <label>
                 Loop count:
-                <input type="number" id="loopCount" name="loopCount" value="0" min="0">
+                <input type="number" id="loopCount" name="loopCount" value="1" min="0">
             </label>
         </div>
         <button onclick="convertToGif()">Generate GIF</button>
