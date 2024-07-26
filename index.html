@@ -347,7 +347,6 @@
             document.getElementsByClassName('settings')[0].style.display = 'block';
         });
         function convertToGif() {
-
             // hide drop area if not hidden and the gif settings
             document.getElementById('dropArea').style.display = 'none';
             document.getElementsByClassName('settings')[0].style.display = 'none';
@@ -358,6 +357,7 @@
             const outputGif = document.getElementById('outputGif');
             const downloadLink = document.getElementById('downloadLink');
 
+            videoPreview.muted = true;
     const resolutionSelect = document.getElementById('resolution');
     const fpsInput = document.getElementById('fps');
     const loopCountInput = document.getElementById('loopCount');
