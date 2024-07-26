@@ -14,7 +14,8 @@
         gtag('js', new Date());
         gtag('config', 'G-T7HFKFX0PR');
     </script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+    <script src="gif.worker.js"></script>
     <!-- SEO and Metadata -->
     <meta name="author" content="Dor Pascal">
     <meta name="generator" content="vscode">
@@ -244,6 +245,17 @@
             <label for="videoInput">Upload Video:</label>
             <input type="file" id="videoInput" name="videoInput" accept="video/*">
         </div>
+         <h1>Video to GIF Converter (Debug Version)</h1>
+
+    <br><br>
+    <video id="videoPreview" width="320" height="240" controls style="display: none;"></video>
+    <br><br>
+    <div id="frameContainer"></div>
+    <br><br>
+    <img id="outputGif" style="display: none;">
+    <br><br>
+    <a id="downloadLink" style="display: none;" download="output.gif">Download GIF</a>
+
         <div class="settings">
             <label>
                 Resolution:
@@ -263,7 +275,7 @@
                 <input type="number" id="loopCount" name="loopCount" value="0" min="0">
             </label>
         </div>
-        <button onclick="generateGIF()">Generate GIF</button>
+        <button onclick="convertToGif()">Generate GIF</button>
         <div class="preview" id="previewContainer"></div>
     </div>
     <footer>
@@ -304,76 +316,74 @@
         </div>
         <p>Built by <a href="https://dorpascal.com" target="_blank" rel="noopener">Dor Pascal</a> &copy; 2024</p>
     </footer>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
-    <script src="https://kit.fontawesome.com/7b3b6f4b3f.js" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js"></script>
     <script>
-    let selectedFile;
+        function convertToGif() {
+            const videoInput = document.getElementById('videoInput');
+            const videoPreview = document.getElementById('videoPreview');
+            const frameContainer = document.getElementById('frameContainer');
+            const outputGif = document.getElementById('outputGif');
+            const downloadLink = document.getElementById('downloadLink');
+            const file = videoInput.files[0];
 
-    const dropArea = document.getElementById('dropArea');
-    const videoInput = document.getElementById('videoInput');
-
-    function generateGIF() {
-        const fileInput = document.getElementById('videoInput');
-        const selectedFile = fileInput.files[0];
-        const fps = 10;
-        const frameSkip =  1; // Add a frame skip input
-
-        if (!selectedFile) {
-            alert('Please select a video file.');
-            return;
-        }
-
-        if (isNaN(fps) || fps <= 0) {
-            alert('Please enter a valid FPS value.');
-            return;
-        }
-
-        const gif = new GIF({
-            workers: 2,
-            quality: 10
-        });
-
-        const video = document.createElement('video');
-        video.src = URL.createObjectURL(selectedFile);
-        video.onloadedmetadata = function () {
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-
-            if (!canvas.width || !canvas.height) {
-                alert('Error: Video dimensions are not valid.');
+            if (!file) {
+                alert('Please select a video file');
                 return;
             }
 
-            const ctx = canvas.getContext('2d');
-            video.play();
-            let frameCount = 0;
-            video.onplay = function () {
-                const interval = setInterval(() => {
-                    if (frameCount % frameSkip === 0) {
-                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                        gif.addFrame(ctx, { copy: true, delay: 1000 / fps });
+            // Display the video
+            videoPreview.src = URL.createObjectURL(file);
+            videoPreview.style.display = 'block';
+
+            videoPreview.onloadedmetadata = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                // Set a lower resolution
+                canvas.width = 160;
+                canvas.height = 120;
+
+                const gif = new GIF({
+                    workers: 2,
+                    quality: 10,
+                    width: canvas.width,
+                    height: canvas.height
+                });
+
+                const duration = Math.min(videoPreview.duration, 10); // Max 10 seconds
+                let currentTime = 0;
+
+                function captureFrame() {
+                    if (currentTime < duration) {
+                        videoPreview.currentTime = currentTime;
+                        videoPreview.onseeked = function() {
+                            ctx.drawImage(videoPreview, 0, 0, canvas.width, canvas.height);
+
+                            // Add frame to GIF
+                            gif.addFrame(ctx, {copy: true, delay: 100});
+
+                            // Display the captured frame
+                            const frameImg = document.createElement('img');
+                            frameImg.src = canvas.toDataURL('image/jpeg');
+                            frameContainer.appendChild(frameImg);
+
+                            currentTime += 0.1; // Capture a frame every 0.1 second
+                            captureFrame();
+                        };
+                    } else {
+                        // Render the GIF
+                        gif.on('finished', function(blob) {
+                            outputGif.src = URL.createObjectURL(blob);
+                            outputGif.style.display = 'block';
+                            downloadLink.href = URL.createObjectURL(blob);
+                            downloadLink.style.display = 'inline-block';
+                        });
+                        gif.render();
                     }
-                    frameCount++;
-                }, 1000 / fps);
+                }
 
-                video.onended = function () {
-                    clearInterval(interval);
-                    gif.render();
-                };
+                captureFrame();
             };
-        };
-
-        gif.on('finished', function (blob) {
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'generated.gif';
-            link.click();
-        });
-    }
+        }
     </script>
-
 </body>
-
 </html>
