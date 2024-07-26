@@ -309,66 +309,82 @@
         });
 
         convertBtn.addEventListener('click', convertToGif);
+function convertToGif() {
+    const video = videoPreview;
 
-        function convertToGif() {
-            const video = videoPreview;
+    convertBtn.disabled = true;
+    status.textContent = 'Converting...';
 
+    const canvas = document.createElement('canvas');
+    const tempCanvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const tempCtx = tempCanvas.getContext('2d');
 
-            convertBtn.disabled = true;
-            status.textContent = 'Converting...';
+    video.addEventListener('loadedmetadata', function() {
+        const aspectRatio = video.videoWidth / video.videoHeight;
+        canvas.width = tempCanvas.width = 320;
+        canvas.height = tempCanvas.height = Math.round(320 / aspectRatio);
 
-            const canvas = document.createElement('canvas');
-            const aspectRatio = video.videoWidth / video.videoHeight;
-            canvas.width = 320;
-            canvas.height = Math.round(320 / aspectRatio);
-            const ctx = canvas.getContext('2d');
+        // Draw the first frame to get the correct dimensions
+        requestAnimationFrame(function() {
+            tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+            startConverting();
+        });
+    });
 
-            const gif = new GIF({
-                workers: 2,
-                quality: 10,
-                width: canvas.width,
-                height: canvas.height,
-            });
+    function startConverting() {
+        const gif = new GIF({
+            workers: 2,
+            quality: 10,
+            width: canvas.width,
+            height: canvas.height,
+        });
 
-            const duration = 3; // Duration of GIF in seconds
-            const fps = 10; // Frames per second
-            const totalFrames = duration * fps;
+        const duration = 3; // Duration of GIF in seconds
+        const fps = 10; // Frames per second
+        const totalFrames = duration * fps;
 
-            let currentFrame = 0;
+        let currentFrame = 0;
 
-            function addFrame() {
-                if (currentFrame < totalFrames) {
-                    video.currentTime = (currentFrame / fps);
-                    video.onseeked = () => {
-                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                        gif.addFrame(ctx, {copy: true, delay: 100});
-                        currentFrame++;
-                        status.textContent = `Converting... ${Math.round((currentFrame / totalFrames) * 100)}%`;
-                        addFrame();
-                    };
-                } else {
-                    gif.render();
-                }
+        function addFrame() {
+            if (currentFrame < totalFrames) {
+                video.currentTime = (currentFrame / fps);
+                video.onseeked = () => {
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    gif.addFrame(ctx, {copy: true, delay: 100});
+                    currentFrame++;
+                    status.textContent = `Converting... ${Math.round((currentFrame / totalFrames) * 100)}%`;
+                    addFrame();
+                };
+            } else {
+                gif.render();
             }
-
-            gif.on('finished', function(blob) {
-                const gifUrl = URL.createObjectURL(blob);
-                outputGif.src = gifUrl;
-                outputGif.style.display = 'block';
-                status.textContent = 'Conversion complete! ';
-                convertBtn.disabled = false;
-                // add download link
-                const a = document.createElement('a');
-                a.href = gifUrl;
-                a.download = 'output.gif';
-                a.textContent = 'Download GIF';
-                status.appendChild(a);
-
-            });
-
-            video.currentTime = 0;
-            addFrame();
         }
+
+        gif.on('finished', function(blob) {
+            const gifUrl = URL.createObjectURL(blob);
+            outputGif.src = gifUrl;
+            outputGif.style.display = 'block';
+            status.textContent = 'Conversion complete! ';
+            convertBtn.disabled = false;
+            // add download link
+            const a = document.createElement('a');
+            a.href = gifUrl;
+            a.download = 'output.gif';
+            a.textContent = 'Download GIF';
+            status.appendChild(a);
+        });
+
+        video.currentTime = 0;
+        addFrame();
+    }
+
+    // Trigger the loadedmetadata event if the video is already loaded
+    if (video.readyState >= 2) {
+        video.dispatchEvent(new Event('loadedmetadata'));
+    }
+}
+
     </script>
 </body>
 </html>
