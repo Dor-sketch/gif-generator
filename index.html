@@ -15,7 +15,9 @@
         gtag('config', 'G-T7HFKFX0PR');
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
-    <script src="gif.worker.js"></script>
+    <script>
+        GIF.prototype.workerScript = 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js';
+    </script>
     <!-- SEO and Metadata -->
     <meta name="author" content="Dor Pascal">
     <meta name="generator" content="vscode">
@@ -234,7 +236,6 @@
     </style>
 </head>
 
-
 <body>
 
     <div class="container">
@@ -245,16 +246,13 @@
             <label for="videoInput">Upload Video:</label>
             <input type="file" id="videoInput" name="videoInput" accept="video/*">
         </div>
-         <h1>Video to GIF Converter (Debug Version)</h1>
-
-    <br><br>
-    <video id="videoPreview" width="320" height="240" controls style="display: none;"></video>
-    <br><br>
-    <div id="frameContainer"></div>
-    <br><br>
-    <img id="outputGif" style="display: none;">
-    <br><br>
-    <a id="downloadLink" style="display: none;" download="output.gif">Download GIF</a>
+        <video id="videoPreview" width="320" height="240" controls style="display: none;"></video>
+        <br><br>
+        <div id="frameContainer"></div>
+        <br><br>
+        <img id="outputGif" style="display: none;">
+        <br><br>
+        <a id="downloadLink" style="display: none;" download="output.gif">Download GIF</a>
 
         <div class="settings">
             <label>
@@ -323,6 +321,9 @@
             const frameContainer = document.getElementById('frameContainer');
             const outputGif = document.getElementById('outputGif');
             const downloadLink = document.getElementById('downloadLink');
+            const resolutionSelect = document.getElementById('resolution');
+            const fpsInput = document.getElementById('fps');
+            const loopCountInput = document.getElementById('loopCount');
             const file = videoInput.files[0];
 
             if (!file) {
@@ -330,48 +331,58 @@
                 return;
             }
 
+            // Get custom settings
+            const resolution = resolutionSelect.value.split('x');
+            const width = parseInt(resolution[0]);
+            const height = parseInt(resolution[1]);
+            const fps = parseInt(fpsInput.value);
+            const loopCount = parseInt(loopCountInput.value);
+
             // Display the video
             videoPreview.src = URL.createObjectURL(file);
             videoPreview.style.display = 'block';
 
-            videoPreview.onloadedmetadata = function() {
+            videoPreview.onloadedmetadata = function () {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
 
-                // Set a lower resolution
-                canvas.width = 160;
-                canvas.height = 120;
+                // Set canvas resolution
+                canvas.width = width;
+                canvas.height = height;
 
                 const gif = new GIF({
                     workers: 2,
                     quality: 10,
                     width: canvas.width,
-                    height: canvas.height
+                    height: canvas.height,
+                    workerScript: 'gif.worker.js',
+                    loop: loopCount
                 });
 
                 const duration = Math.min(videoPreview.duration, 10); // Max 10 seconds
+                const frameDelay = 1000 / fps;
                 let currentTime = 0;
 
                 function captureFrame() {
                     if (currentTime < duration) {
                         videoPreview.currentTime = currentTime;
-                        videoPreview.onseeked = function() {
+                        videoPreview.onseeked = function () {
                             ctx.drawImage(videoPreview, 0, 0, canvas.width, canvas.height);
 
                             // Add frame to GIF
-                            gif.addFrame(ctx, {copy: true, delay: 100});
+                            gif.addFrame(ctx, { copy: true, delay: frameDelay });
 
                             // Display the captured frame
                             const frameImg = document.createElement('img');
                             frameImg.src = canvas.toDataURL('image/jpeg');
                             frameContainer.appendChild(frameImg);
 
-                            currentTime += 0.1; // Capture a frame every 0.1 second
+                            currentTime += frameDelay / 1000; // Increment currentTime by frameDelay in seconds
                             captureFrame();
                         };
                     } else {
                         // Render the GIF
-                        gif.on('finished', function(blob) {
+                        gif.on('finished', function (blob) {
                             outputGif.src = URL.createObjectURL(blob);
                             outputGif.style.display = 'block';
                             downloadLink.href = URL.createObjectURL(blob);
@@ -386,4 +397,5 @@
         }
     </script>
 </body>
+
 </html>
