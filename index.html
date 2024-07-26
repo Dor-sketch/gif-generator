@@ -6,7 +6,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Video to GIF Converter</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Google Tag Manager -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-T7HFKFX0PR"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -147,6 +146,7 @@
             cursor: pointer;
             transition: background-color 0.3s;
             margin: 5px;
+            display:none;
         }
 
         button:hover {
@@ -156,6 +156,7 @@
         .settings {
             margin: 20px 0;
             text-align: left;
+            display: none;
         }
 
         .settings label {
@@ -233,6 +234,10 @@
                 width: calc(min(100vw, 500px) - 40px);
             }
         }
+
+        #videoPreview, #outputGif {
+            margin: 0 auto;
+        }
     </style>
 </head>
 
@@ -248,33 +253,36 @@
         </div>
         <video id="videoPreview" width="320" height="240" controls style="display: none;"></video>
         <br><br>
-        <div id="frameContainer"></div>
+        <div id="frameContainer" style="display: none;"></div>
         <br><br>
         <img id="outputGif" style="display: none;">
         <br><br>
         <a id="downloadLink" style="display: none;" download="output.gif">Download GIF</a>
+        <progress id="progressBar" value="0" max="100" style="width: 100%; display: none;"></progress>
 
         <div class="settings">
+        <label>
+    Speed multiplier:
+    <input type="number" id="speedMultiplier" name="speedMultiplier" value="1" min="0.1" max="5" step="0.1">
+</label>
             <label>
-                Resolution:
+  Resolution:
                 <select id="resolution">
-                    <option value="320x240">320x240</option>
-                    <option value="640x480">640x480</option>
-                    <option value="1280x720">1280x720</option>
-                    <option value="1920x1080">1920x1080</option>
+                    <option value="Original">Original</option>
+                    <option value="Normal">Normal (640px)</option>
+                    <option value="Low">Low (320px)</option>
                 </select>
             </label>
             <label>
                 Frames per second (FPS):
-                <input type="number" id="fps" name="fps" value="1" min="1" max="60">
+                <input type="number" id="fps" name="fps" value="10" min="1" max="60">
             </label>
             <label>
                 Loop count:
-                <input type="number" id="loopCount" name="loopCount" value="1" min="0">
+                <input type="number" id="loopCount" name="loopCount" value="0" min="0">
             </label>
         </div>
         <button onclick="convertToGif()">Generate GIF</button>
-            <progress id="progressBar" value="0" max="100" style="width: 100%; display: none;"></progress>
         <div class="preview" id="previewContainer"></div>
     </div>
     <footer>
@@ -316,14 +324,43 @@
         <p>Built by <a href="https://dorpascal.com" target="_blank" rel="noopener">Dor Pascal</a> &copy; 2024</p>
     </footer>
     <script>
-       function convertToGif() {
-    const videoInput = document.getElementById('videoInput');
-    const videoPreview = document.getElementById('videoPreview');
-    const outputGif = document.getElementById('outputGif');
-    const downloadLink = document.getElementById('downloadLink');
+
+        // listen to video input change to display the video
+        document.getElementById('videoInput').addEventListener('change', function () {
+            const videoInput = document.getElementById('videoInput');
+            const videoPreview = document.getElementById('videoPreview');
+            const file = videoInput.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            videoPreview.src = URL.createObjectURL(file);
+            videoPreview.style.display = 'block';
+
+            // hide drop area
+            document.getElementById('dropArea').style.display = 'none';
+
+            //display generate gif button and settings
+            document.getElementsByTagName('button')[0].style.display = 'block';
+            document.getElementsByClassName('settings')[0].style.display = 'block';
+        });
+        function convertToGif() {
+
+            // hide drop area if not hidden and the gif settings
+            document.getElementById('dropArea').style.display = 'none';
+            document.getElementsByClassName('settings')[0].style.display = 'none';
+            // hide generate gif button
+            document.getElementsByTagName('button')[0].style.display = 'none';
+            const videoInput = document.getElementById('videoInput');
+            const videoPreview = document.getElementById('videoPreview');
+            const outputGif = document.getElementById('outputGif');
+            const downloadLink = document.getElementById('downloadLink');
+
     const resolutionSelect = document.getElementById('resolution');
     const fpsInput = document.getElementById('fps');
     const loopCountInput = document.getElementById('loopCount');
+    const speedMultiplierInput = document.getElementById('speedMultiplier');
     const progressBar = document.getElementById('progressBar');
     const file = videoInput.files[0];
 
@@ -332,72 +369,89 @@
         return;
     }
 
-    // Get custom settings
-    const resolution = resolutionSelect.value.split('x');
-    const width = parseInt(resolution[0]);
-    const height = parseInt(resolution[1]);
     const fps = parseInt(fpsInput.value);
     const loopCount = parseInt(loopCountInput.value);
+    const speedMultiplier = parseFloat(speedMultiplierInput.value);
 
-    // Display the video
-    videoPreview.src = URL.createObjectURL(file);
-    videoPreview.style.display = 'block';
+    // Get custom settings
+    let width, height;
+    const aspectRatio = videoPreview.videoWidth / videoPreview.videoHeight;
 
-    videoPreview.onloadedmetadata = function () {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
+    if (resolutionSelect.value === 'Original') {
+        width = Math.min(640, videoPreview.videoWidth);
+        height = width / aspectRatio;
+    } else if (resolutionSelect.value === 'Normal') {
+        width = Math.min(640, videoPreview.videoWidth);
+        height = width / aspectRatio;
+    } else if (resolutionSelect.value === 'Low') {
+        width = Math.min(320, videoPreview.videoWidth);
+        height = width / aspectRatio;
+    }
 
-        // Set canvas resolution
-        canvas.width = width;
-        canvas.height = height;
+    // Ensure dimensions are integers
+    width = Math.floor(width);
+    height = Math.floor(height);
 
-        const gif = new GIF({
-            workers: 2,
-            quality: 10,
-            width: canvas.width,
-            height: canvas.height,
-            workerScript: 'gif.worker.js',
-            loop: loopCount
-        });
+            // Display the video
+            videoPreview.src = URL.createObjectURL(file);
+            videoPreview.style.display = 'block';
 
-        const duration = Math.min(videoPreview.duration, 10); // Max 10 seconds
-        const frameDelay = 1000 / fps;
-        let currentTime = 0;
+            videoPreview.onloadedmetadata = function () {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
 
-        progressBar.style.display = 'block'; // Show progress bar
+                // Set canvas resolution
+                canvas.width = width;
+                canvas.height = height;
 
-        function captureFrame() {
-            if (currentTime < duration) {
-                videoPreview.currentTime = currentTime;
-                videoPreview.onseeked = function () {
-                    ctx.drawImage(videoPreview, 0, 0, canvas.width, canvas.height);
-
-                    // Add frame to GIF
-                    gif.addFrame(ctx, { copy: true, delay: frameDelay });
-
-                    // Update progress bar
-                    progressBar.value = (currentTime / duration) * 100;
-
-                    currentTime += frameDelay / 1000; // Increment currentTime by frameDelay in seconds
-                    captureFrame();
-                };
-            } else {
-                // Render the GIF
-                gif.on('finished', function (blob) {
-                    outputGif.src = URL.createObjectURL(blob);
-                    outputGif.style.display = 'block';
-                    downloadLink.href = URL.createObjectURL(blob);
-                    downloadLink.style.display = 'inline-block';
-                    progressBar.style.display = 'none'; // Hide progress bar when done
+                const gif = new GIF({
+                    workers: 2,
+                    quality: 10,
+                    width: canvas.width,
+                    height: canvas.height,
+                    workerScript: 'gif.worker.js',
+                    loop: loopCount
                 });
-                gif.render();
-            }
+
+    const duration = Math.min(videoPreview.duration, 10); // Max 10 seconds
+    const frameDelay = (1000 / fps) / speedMultiplier;
+    let currentTime = 0;
+
+    progressBar.style.display = 'block'; // Show progress bar
+
+    function captureFrame() {
+        if (currentTime < duration) {
+            videoPreview.currentTime = currentTime;
+            videoPreview.onseeked = function () {
+                ctx.drawImage(videoPreview, 0, 0, canvas.width, canvas.height);
+
+                // Add frame to GIF
+                gif.addFrame(ctx, { copy: true, delay: frameDelay });
+
+                // Update progress bar
+                progressBar.value = (currentTime / duration) * 100;
+
+                currentTime += (frameDelay * speedMultiplier) / 1000; // Increment currentTime based on speed multiplier
+                captureFrame();
+            };
+        } else {
+            // Render the GIF
+            gif.on('finished', function (blob) {
+                outputGif.src = URL.createObjectURL(blob);
+                outputGif.style.display = 'block';
+                downloadLink.href = URL.createObjectURL(blob);
+                downloadLink.style.display = 'inline-block';
+                progressBar.style.display = 'none'; // Hide progress bar when done
+                document.getElementById('frameContainer').style.display = 'block';
+                document.getElementById('videoPreview').style.display = 'none';
+            });
+            gif.render();
         }
+    }
 
-        captureFrame();
-    };
-}
-
+    captureFrame();
+};
+        }
     </script>
 </body>
 
