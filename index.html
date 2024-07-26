@@ -405,7 +405,7 @@
                 canvas.height = height;
 
                 const gif = new GIF({
-                    workers: 2,
+                    workers: window.navigator.hardwareConcurrency || 2,
                     quality: 10,
                     width: canvas.width,
                     height: canvas.height,
@@ -420,6 +420,7 @@
     progressBar.style.display = 'block'; // Show progress bar
 
     function captureFrame() {
+        console.log(currentTime);
         if (currentTime < duration) {
             videoPreview.currentTime = currentTime;
             videoPreview.onseeked = function () {
