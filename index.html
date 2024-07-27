@@ -734,12 +734,18 @@
         textBorderWidth.addEventListener('input', updateTextOverlay);
         textBorderColor.addEventListener('input', updateTextOverlay);
         textWheight.addEventListener('change', updateTextOverlay);
+function showControls() {
+    videoPreview.controls = true;
+    convertBtn.style.display = 'block';
+}
 
 function convertToGif() {
     console.log('Converting to GIF...');
     const video = videoPreview;
     convertBtn.disabled = true;
     status.textContent = 'Converting...';
+    // start playing the video
+    video.play();
 
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -760,6 +766,8 @@ function convertToGif() {
     });
 
     function startConverting() {
+    // stop the video
+    video.pause();
         const gif = new GIF({
             workers: 2,
             quality: 10,
