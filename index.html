@@ -103,18 +103,21 @@
         body {
             font-family: Arial, sans-serif;
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            height: 100vh;
+            height: calc(100vh - 20px);
             margin: 0;
             background-color: #f0f0f0;
             flex-direction: column;
         }
 
         h1 {
-            color: #333;
+            color: #f0f0f0;
             font-size: x-large;
-            margin: 0 0 20px;
+            font-weight: 400;
+            margin: 0;
+            text-transform: uppercase;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
 
         .container {
@@ -227,6 +230,7 @@
             .container {
                 padding: 10px;
                 width: calc(100% - 30px);
+                margin: 0;
             }
 
             footer p {
@@ -254,12 +258,32 @@
         input {
         font-size: 16px;
         }
+
+
+
+    /* Center the video input element */
+    #videoInput {
+        display: block;
+        margin: 20px auto;
+    }
+
+    header {
+        background-color: #0055B8;
+        color: #fff;
+        padding: 10px 0;
+        text-align: center;
+        width: 100%;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
     </style>
 </head>
 
 <body>
-    <div class="container">
+<header>
         <h1>Video to GIF Converter</h1>
+</header>
+    <div class="container">
         <input type="file" id="videoInput" accept="video/*">
         <div id="videoContainer" style="position: relative;">
             <video id="videoPreview" controls style="display: none;" class="preview" autoplay muted loop playsinline></video>
@@ -627,7 +651,7 @@ ctx.lineWidth = textBorderWidth.value;
         location.reload();
     });
     status.appendChild(refreshBtn);
-    
+
 });
 
                 video.currentTime = 0;
