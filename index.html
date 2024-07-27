@@ -961,14 +961,22 @@
                     a.download = 'output.gif';
 
                     // Create the GIF image
-                    const gifImage = document.createElement('img');
+                    const gifImage = document.getElementById('outputGif');
                     gifImage.src = gifUrl;
                     gifImage.style.display = 'block';
                     gifImage.style.margin = '20px auto';
                     gifImage.style.maxWidth = '100%';
 
-                    // Append the GIF image inside the download link
-                    a.appendChild(gifImage);
+                    // create text link to download
+                    a.textContent = 'Download GIF';
+                    a.style.display = 'block';
+                    a.style.textAlign = 'center';
+                    a.style.margin = '10px auto';
+                    a.style.color = '#0056b3';
+                    a.style.textDecoration = 'none';
+                    a.style.fontWeight = 'bold';
+                    a.style.fontSize = '20px';
+
 
                     // Update the status text and append the download link
                     status.textContent = 'Done! Click the GIF to download.';
