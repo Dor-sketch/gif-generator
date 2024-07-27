@@ -439,7 +439,7 @@
             <span id="fileName" class="file-name">No file selected</span>
         </div>
         <div id="videoContainer" style="position: relative;">
-            <video id="videoPreview" controls style="display: none;" class="preview" playsinline></video>
+            <video id="videoPreview" controls style="display: none;" class="preview" playsinline autoplay muted></video>
             <div id="textOverlayPreview" style="position: absolute; pointer-events: none;"></div>
         </div>
 <button id="convertBtn" disabled style="display: none;" onclick="convertToGif()" title="Convert to GIF">
@@ -744,8 +744,7 @@ function convertToGif() {
     const video = videoPreview;
     convertBtn.disabled = true;
     status.textContent = 'Converting...';
-    // start playing the video
-    video.play();
+
 
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
