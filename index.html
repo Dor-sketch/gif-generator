@@ -109,6 +109,7 @@
             margin: 0;
             background-color: #f0f0f0;
             flex-direction: column;
+            overflow: hidden;
         }
 
         h1 {
@@ -173,7 +174,6 @@
         }
 
         footer {
-            margin-top: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -183,7 +183,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 10px;
         }
 
         footer .footer-links a {
@@ -233,6 +232,10 @@
                 margin: 0;
             }
 
+            h1 {
+                font-size: large;
+            }
+
             footer p {
                 display: none;
             }
@@ -273,7 +276,7 @@
         padding: 10px 0;
         text-align: center;
         width: 100%;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.21);
     }
 
     </style>
@@ -281,7 +284,7 @@
 
 <body>
 <header>
-        <h1>Video to GIF Converter</h1>
+        <h1>GIF Generator</h1>
 </header>
     <div class="container">
         <input type="file" id="videoInput" accept="video/*">
