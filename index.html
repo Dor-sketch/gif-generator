@@ -109,7 +109,7 @@
             margin: 0;
             background-color: #f0f0f0;
             flex-direction: column;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
         h1 {
@@ -239,6 +239,10 @@
             footer p {
                 display: none;
             }
+
+            footer .footer-links {
+                margin-top: 10px;
+            }
         }
 
         @media (max-width: 400px) {
@@ -266,7 +270,6 @@
 
     /* Center the video input element */
     #videoInput {
-        display: block;
         margin: 20px auto;
     }
 
@@ -279,6 +282,49 @@
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.21);
     }
 
+    select {
+        font-size: 16px;
+    }
+/* Hide the default file input */
+.file-input {
+    display: none;
+}
+
+#outputGif:hover {
+    scale: 1.1;
+}
+
+/* Style the custom file input label */
+.file-input-label {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #0055B8;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: center;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+.file-input-label:hover {
+    background-color: #003164;
+}
+
+/* Style the file name display */
+.file-name {
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #555;
+}
+
+/* Center the file input container */
+.file-input-container {
+    text-align: center;
+    margin: 20px auto;
+}
     </style>
 </head>
 
@@ -287,7 +333,11 @@
         <h1>GIF Generator</h1>
 </header>
     <div class="container">
-        <input type="file" id="videoInput" accept="video/*">
+    <div class="file-input-container" id="videoInput">
+    <input type="file" id="fileInput" class="file-input" />
+    <label for="fileInput" class="file-input-label">Choose File</label>
+    <span id="fileName" class="file-name">No file selected</span>
+</div>
         <div id="videoContainer" style="position: relative;">
             <video id="videoPreview" controls style="display: none;" class="preview" autoplay muted loop playsinline></video>
             <div id="textOverlayPreview" style="position: absolute; pointer-events: none;"></div>
@@ -630,12 +680,13 @@ ctx.lineWidth = textBorderWidth.value;
     gifImage.src = gifUrl;
     gifImage.style.display = 'block';
     gifImage.style.margin = '20px auto';
+    gifImage.style.maxWidth = '100%';
 
     // Append the GIF image inside the download link
     a.appendChild(gifImage);
 
     // Update the status text and append the download link
-    status.textContent = 'Conversion complete! Click the GIF to download.';
+    status.textContent = 'Done! Click the GIF to download.';
     status.appendChild(a);
 
     // Hide video and settings
