@@ -250,6 +250,10 @@
             margin-top: 10px;
             font-style: italic;
         }
+
+        input {
+        font-size: 16px;
+        }
     </style>
 </head>
 
@@ -261,7 +265,7 @@
             <video id="videoPreview" controls style="display: none;" class="preview" autoplay muted loop playsinline></video>
             <div id="textOverlayPreview" style="position: absolute; pointer-events: none;"></div>
         </div>
-        <button id="convertBtn" disabled>Convert to GIF</button>
+        <button id="convertBtn" disabled style="display: none;">Convert to GIF</button>
         <img id="outputGif" style="display: none;">
         <div id="status"></div>
 
@@ -437,6 +441,9 @@
         }
 
         videoInput.addEventListener('change', function (e) {
+            // hide fileInput and show settings
+            document.getElementById('convertBtn').style.display = 'block';
+            document.getElementById('videoInput').style.display = 'none';
             document.getElementsByClassName('settings')[0].style.display = 'block';
             const file = e.target.files[0];
             if (file) {
@@ -494,6 +501,8 @@ videoPreview.addEventListener('loadeddata', function () {
         convertBtn.addEventListener('click', convertToGif);
 
         function convertToGif() {
+            document.getElementById('convertBtn').style.display = 'none';
+            document.getElementsByClassName('settings')[0].style.display = 'none';
             const video = videoPreview;
 
             convertBtn.disabled = true;
@@ -582,22 +591,44 @@ ctx.lineWidth = textBorderWidth.value;
                 }
 
                 gif.on('finished', function (blob) {
-                    const gifUrl = URL.createObjectURL(blob);
-                    outputGif.src = gifUrl;
-                    outputGif.style.display = 'block';
-                    status.textContent = 'Conversion complete! ';
-                    // hide video
-                    document.getElementById('videoContainer').style.display = 'none';
-                    // hide settings
-                    document.getElementsByClassName('settings')[0].style.display = 'none';
-                    convertBtn.disabled = false;
-                    // add download link
-                    const a = document.createElement('a');
-                    a.href = gifUrl;
-                    a.download = 'output.gif';
-                    a.textContent = 'Download GIF';
-                    status.appendChild(a);
-                });
+    const gifUrl = URL.createObjectURL(blob);
+
+    // Create the download link
+    const a = document.createElement('a');
+    a.href = gifUrl;
+    a.download = 'output.gif';
+
+    // Create the GIF image
+    const gifImage = document.createElement('img');
+    gifImage.src = gifUrl;
+    gifImage.style.display = 'block';
+    gifImage.style.margin = '20px auto';
+
+    // Append the GIF image inside the download link
+    a.appendChild(gifImage);
+
+    // Update the status text and append the download link
+    status.textContent = 'Conversion complete! Click the GIF to download.';
+    status.appendChild(a);
+
+    // Hide video and settings
+    document.getElementById('videoContainer').style.display = 'none';
+    document.getElementsByClassName('settings')[0].style.display = 'none';
+
+    // Enable the convert button
+    convertBtn.disabled = false;
+
+    // add refresh button
+    const refreshBtn = document.createElement('button');
+    refreshBtn.textContent = 'Convert Another Video';
+    refreshBtn.style.display = 'block';
+    refreshBtn.style.margin = '20px auto';
+    refreshBtn.addEventListener('click', () => {
+        location.reload();
+    });
+    status.appendChild(refreshBtn);
+    
+});
 
                 video.currentTime = 0;
                 addFrame();
