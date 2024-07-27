@@ -725,7 +725,7 @@
         const gifSpeed = document.getElementById('gifSpeed');
         const textBorderWidth = document.getElementById('textBorderWidth');
         const textBorderColor = document.getElementById('textBorderColor');
-        const textWheight = document.getElementById('textWheight');
+        const textWeight = document.getElementById('textWeight');
 
         function updateTextOverlay() {
             textOverlayPreview.textContent = textOverlay.value;
@@ -734,7 +734,7 @@
             textOverlayPreview.style.textDecoration = textDecoration.value;
             textOverlayPreview.style.webkitTextStrokeWidth = `${textBorderWidth.value}px`;
             textOverlayPreview.style.webkitTextStrokeColor = textBorderColor.value;
-            textOverlayPreview.style.fontWeight = textWheight.value;
+            textOverlayPreview.style.fontWeight = textWeight.value;
             textOverlayPreview.style.textShadow = `${textBorderWidth.value}px ${textBorderWidth.value}px ${textBorderWidth.value}px ${textBorderColor.value}`;
             // Position the text
             switch (textPosition.value) {
@@ -848,7 +848,7 @@
         textDecoration.addEventListener('change', updateTextOverlay);
         textBorderWidth.addEventListener('input', updateTextOverlay);
         textBorderColor.addEventListener('input', updateTextOverlay);
-        textWheight.addEventListener('change', updateTextOverlay);
+        textWeight.addEventListener('change', updateTextOverlay);
         function showControls() {
             videoPreview.controls = true;
             convertBtn.style.display = 'block';
@@ -903,7 +903,7 @@
 
                             // Add text overlay
                             if (textOverlay.value) {
-                                ctx.font = `${textWheight.value} ${textSize.value}px ${textFont.value}`;
+                                ctx.font = `${textWeight.value} ${textSize.value}px ${textFont.value}`;
                                 ctx.textBaseline = 'middle';
                                 ctx.fillStyle = textColor.value;
                                 ctx.strokeStyle = textBorderColor.value;
