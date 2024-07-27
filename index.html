@@ -468,10 +468,6 @@
                 <span class="close-btn">&times;</span>
                 <div class="settings">
 
-                    <label id="durationLabel" for="duration">Duration (seconds):</label>
-                    <input type="number" id="duration" value="5" min="1">
-
-
                     <label for="textFont">Text Font:</label>
                     <select id="textFont">
                         <option value="Arial">Arial</option>
@@ -498,7 +494,6 @@
 
                     <label for="textPosition">Text Position:</label>
                     <select id="textPosition">
-                        <option value="bottom-center">Bottom Center</option>
                         <option value="center">Center</option>
                         <option value="top-left">Top Left</option>
                         <option value="top-right">Top Right</option>
@@ -529,7 +524,7 @@
                     <input type="range" id="gifQuality" min="1" max="30" value="10">
 
                     <label for="gifSpeed">GIF Speed (FPS):</label>
-                    <input type="number" id="gifSpeed" value="5">
+                    <input type="number" id="gifSpeed" value="10">
                 </div>
             </div>
         </div>
@@ -617,7 +612,6 @@
         const textBorderWidth = document.getElementById('textBorderWidth');
         const textBorderColor = document.getElementById('textBorderColor');
         const textWheight = document.getElementById('textWheight');
-        let duration = document.getElementById('duration');
 
         function updateTextOverlay() {
             textOverlayPreview.textContent = textOverlay.value;
@@ -662,12 +656,6 @@
                     textOverlayPreview.style.top = '50%';
                     textOverlayPreview.style.left = '50%';
                     textOverlayPreview.style.transform = 'translate(-50%, -50%)';
-                    textOverlayPreview.style.textAlign = 'center';
-                    break;
-                case 'bottom-center':
-                    textOverlayPreview.style.bottom = '10px';
-                    textOverlayPreview.style.left = '50%';
-                    textOverlayPreview.style.transform = 'translateX(-50%)';
                     textOverlayPreview.style.textAlign = 'center';
                     break;
             }
@@ -766,7 +754,7 @@
                     height: canvas.height,
                 });
 
-                duration = Math.min(parseInt(duration.value), video.duration);
+                const duration = Math.round(video.duration);
                 const fps = parseInt(gifSpeed.value); // Frames per second
                 const totalFrames = duration * fps;
 
@@ -809,10 +797,6 @@
                                     case 'center':
                                         x = (canvas.width - ctx.measureText(textOverlay.value).width) / 2;
                                         y = (canvas.height + parseInt(textSize.value)) / 2;
-                                        break;
-                                    case 'bottom-center':
-                                        x = (canvas.width - ctx.measureText(textOverlay.value).width) / 2;
-                                        y = canvas.height - 10 - parseInt(textSize.value);
                                         break;
                                 }
                                 ctx.fillText(textOverlay.value, x, y);
