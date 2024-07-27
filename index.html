@@ -151,7 +151,6 @@
         .settings {
             margin: 20px 0;
             text-align: left;
-            display: none;
         }
 
         .settings label {
@@ -249,6 +248,40 @@
         <button id="convertBtn" disabled>Convert to GIF</button>
         <div id="status"></div>
         <img id="outputGif" style="display: none;">
+
+        <div class="settings">
+            <label for="textOverlay">Text Overlay:</label>
+            <input type="text" id="textOverlay" placeholder="Enter text to overlay on GIF">
+
+            <label for="textFont">Text Font:</label>
+            <select id="textFont">
+                <option value="Arial">Arial</option>
+                <option value="Verdana">Verdana</option>
+                <option value="Tahoma">Tahoma</option>
+                <option value="Times New Roman">Times New Roman</option>
+            </select>
+
+            <label for="textSize">Text Size:</label>
+            <input type="number" id="textSize" value="16">
+
+            <label for="textColor">Text Color:</label>
+            <input type="color" id="textColor" value="#000000">
+
+            <label for="textPosition">Text Position:</label>
+            <select id="textPosition">
+                <option value="top-left">Top Left</option>
+                <option value="top-right">Top Right</option>
+                <option value="bottom-left">Bottom Left</option>
+                <option value="bottom-right">Bottom Right</option>
+                <option value="center">Center</option>
+            </select>
+
+            <label for="gifQuality">GIF Quality:</label>
+            <input type="range" id="gifQuality" min="1" max="30" value="10">
+
+            <label for="gifSpeed">GIF Speed (FPS):</label>
+            <input type="number" id="gifSpeed" value="10">
+        </div>
     </div>
       <footer>
         <div class="footer-links">
@@ -298,6 +331,14 @@
         const outputGif = document.getElementById('outputGif');
         const status = document.getElementById('status');
 
+        const textOverlay = document.getElementById('textOverlay');
+        const textFont = document.getElementById('textFont');
+        const textSize = document.getElementById('textSize');
+        const textColor = document.getElementById('textColor');
+        const textPosition = document.getElementById('textPosition');
+        const gifQuality = document.getElementById('gifQuality');
+        const gifSpeed = document.getElementById('gifSpeed');
+
         videoInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
@@ -309,81 +350,111 @@
         });
 
         convertBtn.addEventListener('click', convertToGif);
-function convertToGif() {
-    const video = videoPreview;
 
-    convertBtn.disabled = true;
-    status.textContent = 'Converting...';
+        function convertToGif() {
+            const video = videoPreview;
 
-    const canvas = document.createElement('canvas');
-    const tempCanvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const tempCtx = tempCanvas.getContext('2d');
+            convertBtn.disabled = true;
+            status.textContent = 'Converting...';
 
-    video.addEventListener('loadedmetadata', function() {
-        const aspectRatio = video.videoWidth / video.videoHeight;
-        canvas.width = tempCanvas.width = 320;
-        canvas.height = tempCanvas.height = Math.round(320 / aspectRatio);
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
 
-        // Draw the first frame to get the correct dimensions
-        requestAnimationFrame(function() {
-            tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
-            startConverting();
-        });
-    });
+            video.addEventListener('loadedmetadata', function() {
+                const aspectRatio = video.videoWidth / video.videoHeight;
+                canvas.width = 320;
+                canvas.height = Math.round(320 / aspectRatio);
 
-    function startConverting() {
-        const gif = new GIF({
-            workers: 2,
-            quality: 10,
-            width: canvas.width,
-            height: canvas.height,
-        });
-
-        const duration = 3; // Duration of GIF in seconds
-        const fps = 10; // Frames per second
-        const totalFrames = duration * fps;
-
-        let currentFrame = 0;
-
-        function addFrame() {
-            if (currentFrame < totalFrames) {
-                video.currentTime = (currentFrame / fps);
-                video.onseeked = () => {
+                // Draw the first frame to get the correct dimensions
+                requestAnimationFrame(function() {
                     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    gif.addFrame(ctx, {copy: true, delay: 100});
-                    currentFrame++;
-                    status.textContent = `Converting... ${Math.round((currentFrame / totalFrames) * 100)}%`;
-                    addFrame();
-                };
-            } else {
-                gif.render();
+                    startConverting();
+                });
+            });
+
+            function startConverting() {
+                const gif = new GIF({
+                    workers: 2,
+                    quality: parseInt(gifQuality.value),
+                    width: canvas.width,
+                    height: canvas.height,
+                });
+
+                const duration = 3; // Duration of GIF in seconds
+                const fps = parseInt(gifSpeed.value); // Frames per second
+                const totalFrames = duration * fps;
+
+                let currentFrame = 0;
+
+                function addFrame() {
+                    if (currentFrame < totalFrames) {
+                        video.currentTime = (currentFrame / fps);
+                        video.onseeked = () => {
+                            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                            // Add text overlay
+                            if (textOverlay.value) {
+                                ctx.font = `${textSize.value}px ${textFont.value}`;
+                                ctx.fillStyle = textColor.value;
+                                let x, y;
+                                switch (textPosition.value) {
+                                    case 'top-left':
+                                        x = 10;
+                                        y = 30;
+                                        break;
+                                    case 'top-right':
+                                        x = canvas.width - ctx.measureText(textOverlay.value).width - 10;
+                                        y = 30;
+                                        break;
+                                    case 'bottom-left':
+                                        x = 10;
+                                        y = canvas.height - 10;
+                                        break;
+                                    case 'bottom-right':
+                                        x = canvas.width - ctx.measureText(textOverlay.value).width - 10;
+                                        y = canvas.height - 10;
+                                        break;
+                                    case 'center':
+                                        x = (canvas.width - ctx.measureText(textOverlay.value).width) / 2;
+                                        y = (canvas.height + parseInt(textSize.value)) / 2;
+                                        break;
+                                }
+                                ctx.fillText(textOverlay.value, x, y);
+                            }
+
+                            gif.addFrame(ctx, {copy: true, delay: 100});
+                            currentFrame++;
+                            status.textContent = `Converting... ${Math.round((currentFrame / totalFrames) * 100)}%`;
+                            addFrame();
+                        };
+                    } else {
+                        gif.render();
+                    }
+                }
+
+                gif.on('finished', function(blob) {
+                    const gifUrl = URL.createObjectURL(blob);
+                    outputGif.src = gifUrl;
+                    outputGif.style.display = 'block';
+                    status.textContent = 'Conversion complete! ';
+                    convertBtn.disabled = false;
+                    // add download link
+                    const a = document.createElement('a');
+                    a.href = gifUrl;
+                    a.download = 'output.gif';
+                    a.textContent = 'Download GIF';
+                    status.appendChild(a);
+                });
+
+                video.currentTime = 0;
+                addFrame();
+            }
+
+            // Trigger the loadedmetadata event if the video is already loaded
+            if (video.readyState >= 2) {
+                video.dispatchEvent(new Event('loadedmetadata'));
             }
         }
-
-        gif.on('finished', function(blob) {
-            const gifUrl = URL.createObjectURL(blob);
-            outputGif.src = gifUrl;
-            outputGif.style.display = 'block';
-            status.textContent = 'Conversion complete! ';
-            convertBtn.disabled = false;
-            // add download link
-            const a = document.createElement('a');
-            a.href = gifUrl;
-            a.download = 'output.gif';
-            a.textContent = 'Download GIF';
-            status.appendChild(a);
-        });
-
-        video.currentTime = 0;
-        addFrame();
-    }
-
-    // Trigger the loadedmetadata event if the video is already loaded
-    if (video.readyState >= 2) {
-        video.dispatchEvent(new Event('loadedmetadata'));
-    }
-}
 
     </script>
 </body>
