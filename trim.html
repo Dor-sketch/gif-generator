@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video to GIF</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+        }
+
+        video {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        #controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        button {
+            background-color: #0068de;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Trim and Convert Video to GIF</h1>
+        <input type="file" id="fileInput" accept="video/*">
+        <div id="videoContainer" style="display: none;">
+            <video id="videoPreview" controls></video>
+            <div id="controls">
+                <label for="startRange">Start:</label>
+                <input type="range" id="startRange" min="0" step="0.1">
+                <span id="startTime">0.0s</span>
+                <label for="endRange">End:</label>
+                <input type="range" id="endRange" min="0" step="0.1">
+                <span id="endTime">0.0s</span>
+            </div>
+            <button id="trimBtn">Trim Video</button>
+            <button id="convertBtn" style="display: none;">Convert to GIF</button>
+        </div>
+        <div id="status"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const videoPreview = document.getElementById('videoPreview');
+        const videoContainer = document.getElementById('videoContainer');
+        const startRange = document.getElementById('startRange');
+        const endRange = document.getElementById('endRange');
+        const startTimeDisplay = document.getElementById('startTime');
+        const endTimeDisplay = document.getElementById('endTime');
+        const trimBtn = document.getElementById('trimBtn');
+        const convertBtn = document.getElementById('convertBtn');
+        const status = document.getElementById('status');
+
+        let videoDuration = 0;
+        let startTime = 0;
+        let endTime = 0;
+
+        fileInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const videoUrl = URL.createObjectURL(file);
+                videoPreview.src = videoUrl;
+                videoContainer.style.display = 'block';
+
+                videoPreview.onloadedmetadata = function () {
+                    videoDuration = videoPreview.duration;
+                    startRange.max = videoDuration;
+                    endRange.max = videoDuration;
+                    endRange.value = videoDuration;
+                    startTime = 0;
+                    endTime = videoDuration;
+                    updateRangeDisplays();
+                };
+            }
+        });
+
+        startRange.addEventListener('input', function () {
+            startTime = parseFloat(startRange.value);
+            if (startTime >= endTime) {
+                endTime = startTime;
+                endRange.value = endTime;
+            }
+            updateRangeDisplays();
+        });
+
+        endRange.addEventListener('input', function () {
+            endTime = parseFloat(endRange.value);
+            if (endTime <= startTime) {
+                startTime = endTime;
+                startRange.value = startTime;
+            }
+            updateRangeDisplays();
+        });
+
+        function updateRangeDisplays() {
+            startTimeDisplay.textContent = `${startTime.toFixed(1)}s`;
+            endTimeDisplay.textContent = `${endTime.toFixed(1)}s`;
+        }
+
+        trimBtn.addEventListener('click', function () {
+            trimVideo(videoPreview, startTime, endTime);
+            convertBtn.style.display = 'block';
+        });
+
+        convertBtn.addEventListener('click', convertToGif);
+
+        function trimVideo(videoElement, start, end) {
+            videoElement.currentTime = start;
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const duration = end - start;
+            const fps = 10;
+            const totalFrames = Math.floor(duration * fps);
+            let currentFrame = 0;
+
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+
+            function captureFrame() {
+                if (currentFrame < totalFrames) {
+                    videoElement.currentTime = start + (currentFrame / fps);
+                    videoElement.onseeked = () => {
+                        ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+                        currentFrame++;
+                        captureFrame();
+                    };
+                } else {
+                    console.log('Trimming complete');
+                }
+            }
+
+            captureFrame();
+        }
+
+        function convertToGif() {
+            status.textContent = 'Converting...';
+            const gif = new GIF({
+                workers: 2,
+                quality: 10,
+                width: videoPreview.videoWidth,
+                height: videoPreview.videoHeight,
+            });
+
+            videoPreview.currentTime = startTime;
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = videoPreview.videoWidth;
+            canvas.height = videoPreview.videoHeight;
+
+            const duration = endTime - startTime;
+            const fps = 10;
+            const totalFrames = Math.floor(duration * fps);
+            let currentFrame = 0;
+
+            function addFrame() {
+                if (currentFrame < totalFrames) {
+                    videoPreview.currentTime = startTime + (currentFrame / fps);
+                    videoPreview.onseeked = () => {
+                        ctx.drawImage(videoPreview, 0, 0, canvas.width, canvas.height);
+                        gif.addFrame(ctx, { copy: true, delay: 100 / fps });
+                        currentFrame++;
+                        status.textContent = `Converting... ${Math.round((currentFrame / totalFrames) * 100)}%`;
+                        addFrame();
+                    };
+                } else {
+                    gif.render();
+                }
+            }
+
+            gif.on('finished', function (blob) {
+                const gifUrl = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = gifUrl;
+                a.download = 'output.gif';
+                a.textContent = 'Download GIF';
+                status.textContent = 'Conversion complete. ';
+                status.appendChild(a);
+            });
+
+            addFrame();
+        }
+    </script>
+</body>
+
+</html>
+ 

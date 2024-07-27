@@ -468,6 +468,10 @@
                 <span class="close-btn">&times;</span>
                 <div class="settings">
 
+                    <label id="durationLabel" for="duration">Duration (seconds):</label>
+                    <input type="number" id="duration" value="5" min="1">
+
+
                     <label for="textFont">Text Font:</label>
                     <select id="textFont">
                         <option value="Arial">Arial</option>
@@ -612,6 +616,7 @@
         const textBorderWidth = document.getElementById('textBorderWidth');
         const textBorderColor = document.getElementById('textBorderColor');
         const textWheight = document.getElementById('textWheight');
+        let duration = document.getElementById('duration');
 
         function updateTextOverlay() {
             textOverlayPreview.textContent = textOverlay.value;
@@ -754,7 +759,7 @@
                     height: canvas.height,
                 });
 
-                const duration = video.duration;
+                duration = Math.min(parseInt(duration.value), video.duration);
                 const fps = parseInt(gifSpeed.value); // Frames per second
                 const totalFrames = duration * fps;
 
