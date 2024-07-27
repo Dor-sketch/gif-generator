@@ -901,7 +901,7 @@
 
                             // Add text overlay
                             if (textOverlay.value) {
-                                ctx.font = `${textWeight.value} ${textSize.value}px ${textFont.value}`;
+                                ctx.font = `${textWeight.value} ${textSize.value *2}px ${textFont.value}`;
                                 ctx.textBaseline = 'middle';
                                 ctx.fillStyle = textColor.value;
                                 ctx.strokeStyle = textBorderColor.value;
@@ -928,7 +928,7 @@
                                         break;
                                     case 'center':
                                         x = (canvas.width - ctx.measureText(textOverlay.value).width) / 2;
-                                        y = (canvas.height + parseInt(textSize.value)) / 2;
+                                        y = (canvas.height + parseInt(textSize.value *2)) / 2;
                                         break;
                                 }
                                 ctx.fillText(textOverlay.value, x, y);
