@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -61,6 +62,7 @@
         }
     }
     </script>
+    <link href="https://fonts.googleapis.com/css2?family=David+Libre:wght@400;700&display=swap" rel="stylesheet">
 
     <!-- Icons and Manifest -->
     <link type="image/png" sizes="16x16" rel="icon" href="./icons/Web/icons8-gif-color-16.png">
@@ -72,15 +74,24 @@
     <link rel="icon" type="image/png" sizes="144x144" href="./icons/Android-Chrome/icons8-gif-color-144.png">
     <link rel="icon" type="image/png" sizes="192x192" href="./icons/Android-Chrome/icons8-gif-color-192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="./icons/Android-Chrome/icons8-gif-color-512.png">
-    <link rel="apple-touch-icon" type="image/png" sizes="57x57" href="./icons/iOS-Safari-Web-Clip/icons8-gif-color-57.png">
-    <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="./icons/iOS-Safari-Web-Clip/icons8-gif-color-60.png">
-    <link rel="apple-touch-icon" type="image/png" sizes="72x72" href="./icons/iOS-Safari-Web-Clip/icons8-gif-color-72.png">
-    <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="./icons/iOS-Safari-Web-Clip/icons8-gif-color-76.png">
-    <link rel="apple-touch-icon" type="image/png" sizes="114x114" href="./icons/iOS-Safari-Web-Clip/icons8-gif-color-114.png">
-    <link rel="apple-touch-icon" type="image/png" sizes="120x120" href="./icons/iOS-Safari-Web-Clip/icons8-gif-color-120.png">
-    <link rel="apple-touch-icon" type="image/png" sizes="144x144" href="./icons/iOS-Safari-Web-Clip/icons8-gif-color-144.png">
-    <link rel="apple-touch-icon" type="image/png" sizes="152x152" href="./icons/iOS-Safari-Web-Clip/icons8-gif-color-152.png">
-    <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="./icons/iOS-Safari-Web-Clip/icons8-gif-color-180.png">
+    <link rel="apple-touch-icon" type="image/png" sizes="57x57"
+        href="./icons/iOS-Safari-Web-Clip/icons8-gif-color-57.png">
+    <link rel="apple-touch-icon" type="image/png" sizes="60x60"
+        href="./icons/iOS-Safari-Web-Clip/icons8-gif-color-60.png">
+    <link rel="apple-touch-icon" type="image/png" sizes="72x72"
+        href="./icons/iOS-Safari-Web-Clip/icons8-gif-color-72.png">
+    <link rel="apple-touch-icon" type="image/png" sizes="76x76"
+        href="./icons/iOS-Safari-Web-Clip/icons8-gif-color-76.png">
+    <link rel="apple-touch-icon" type="image/png" sizes="114x114"
+        href="./icons/iOS-Safari-Web-Clip/icons8-gif-color-114.png">
+    <link rel="apple-touch-icon" type="image/png" sizes="120x120"
+        href="./icons/iOS-Safari-Web-Clip/icons8-gif-color-120.png">
+    <link rel="apple-touch-icon" type="image/png" sizes="144x144"
+        href="./icons/iOS-Safari-Web-Clip/icons8-gif-color-144.png">
+    <link rel="apple-touch-icon" type="image/png" sizes="152x152"
+        href="./icons/iOS-Safari-Web-Clip/icons8-gif-color-152.png">
+    <link rel="apple-touch-icon" type="image/png" sizes="180x180"
+        href="./icons/iOS-Safari-Web-Clip/icons8-gif-color-180.png">
     <link color="#26E07F" rel="mask-icon" href="./icons/macOS/icons8-gif-color-60.svg">
     <meta name="msapplication-square70x70logo" content="./icons/icons8-gif-color-70.png">
     <meta name="msapplication-TileImage" content="./icons/icons8-gif-color-144.png">
@@ -88,7 +99,7 @@
     <meta name="msapplication-square310x310logo" content="./icons/Windows/icons8-gif-color-310.png">
     <meta name="msapplication-TileColor" content="#C0FFEE">
     <meta name="application-name" content="Video to GIF Converter">
-     <style>
+    <style>
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -229,7 +240,8 @@
             }
         }
 
-        #videoPreview, #outputGif {
+        #videoPreview,
+        #outputGif {
             margin: 0 auto;
             max-width: 100%;
         }
@@ -240,43 +252,74 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>Video to GIF Converter</h1>
         <input type="file" id="videoInput" accept="video/*">
-<div id="videoContainer" style="position: relative;">
-    <video id="videoPreview" controls style="display: none;"></video>
-    <div id="textOverlayPreview" style="position: absolute; pointer-events: none;"></div>
-</div>
+        <div id="videoContainer" style="position: relative;">
+            <video id="videoPreview" controls style="display: none;" class="preview" autoplay muted loop playsinline></video>
+            <div id="textOverlayPreview" style="position: absolute; pointer-events: none;"></div>
+        </div>
         <button id="convertBtn" disabled>Convert to GIF</button>
-        <div id="status"></div>
         <img id="outputGif" style="display: none;">
+        <div id="status"></div>
 
-        <div class="settings">
+        <div class="settings" style="display: none;">
             <label for="textOverlay">Text Overlay:</label>
             <input type="text" id="textOverlay" placeholder="Enter text to overlay on GIF">
 
             <label for="textFont">Text Font:</label>
             <select id="textFont">
                 <option value="Arial">Arial</option>
+                <option value="Comic Sans MS">Comic Sans MS</option>
                 <option value="Verdana">Verdana</option>
                 <option value="Tahoma">Tahoma</option>
                 <option value="Times New Roman">Times New Roman</option>
+                <option value="Courier New">Courier New</option>
+                <option value="'David Libre', sans-serif">David Libre</option>
+            </select>
+
+            <select id="textDecoration">
+                <option value="none">None</option>
+                <option value="underline">Underline</option>
+                <option value="overline">Overline</option>
+                <option value="line-through">Line-through</option>
             </select>
 
             <label for="textSize">Text Size:</label>
-            <input type="number" id="textSize" value="16">
+            <input type="number" id="textSize" value="32">
 
             <label for="textColor">Text Color:</label>
             <input type="color" id="textColor" value="#000000">
 
             <label for="textPosition">Text Position:</label>
             <select id="textPosition">
+                <option value="center">Center</option>
                 <option value="top-left">Top Left</option>
                 <option value="top-right">Top Right</option>
                 <option value="bottom-left">Bottom Left</option>
                 <option value="bottom-right">Bottom Right</option>
-                <option value="center">Center</option>
+            </select>
+
+
+            <label for="textBorderWidth">Text Border Width:</label>
+            <input type="number" id="textBorderWidth" value="1" min="0">
+
+            <label for="textBorderColor">Text Border Color:</label>
+            <input type="color" id="textBorderColor" value="#000000">
+
+            <label for="textWheight">Text Wheight:</label>
+            <select id="textWheight">
+                <option value="700">700</option>
+                <option value="100">100</option>
+                <option value="200">200</option>
+                <option value="300">300</option>
+                <option value="400">400</option>
+                <option value="500">500</option>
+                <option value="600">600</option>
+                <option value="800">800</option>
+                <option value="900">900</option>
             </select>
 
             <label for="gifQuality">GIF Quality:</label>
@@ -286,7 +329,7 @@
             <input type="number" id="gifSpeed" value="10">
         </div>
     </div>
-      <footer>
+    <footer>
         <div class="footer-links">
             <a href="https://www.github.com/Dor-sketch" aria-label="Dor Pascal on GitHub" target="_blank"
                 rel="noopener">
@@ -302,16 +345,14 @@
                     <g transform="translate(38.4,38.4) scale(0.7,0.7)">
                         <g fill="none" fill-rule="nonzero" stroke="#808080" stroke-width="8" stroke-linecap="butt"
                             stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
-                            font-family="none" font-size="none"
-                            style="mix-blend-mode: normal">
+                            font-family="none" font-size="none" style="mix-blend-mode: normal">
                             <path
                                 d="M-14.08963,305.61204c-19.61848,0-35.52241,-15.90392-35.52241,-35.52241v-284.17926c0,-19.61848 15.90392,-35.52241 35.52241,-35.52241h284.17926c19.61848,0 35.52241,15.90392 35.52241,35.52241v284.17926c0,19.61848-15.90392,35.52241-35.52241,35.52241z"
                                 id="shape"></path>
                         </g>
                         <g fill-opacity="0.85882" fill-rule="nonzero" stroke="none" stroke-width="1"
                             stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray=""
-                            stroke-dashoffset="0" font-family="none" font-size="none"
-                             style="mix-blend-mode: normal">
+                            stroke-dashoffset="0" font-family="none" font-size="none" style="mix-blend-mode: normal">
                             <g transform="scale(8,8)">
                                 <rect x="5" y="2" width="4" height="28"></rect>
                                 <path
@@ -329,84 +370,128 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
     <script>
         const videoInput = document.getElementById('videoInput');
-const videoPreview = document.getElementById('videoPreview');
-const textOverlayPreview = document.getElementById('textOverlayPreview');
-const convertBtn = document.getElementById('convertBtn');
-const outputGif = document.getElementById('outputGif');
-const status = document.getElementById('status');
+        const videoPreview = document.getElementById('videoPreview');
+        const textOverlayPreview = document.getElementById('textOverlayPreview');
+        const convertBtn = document.getElementById('convertBtn');
+        const outputGif = document.getElementById('outputGif');
+        const status = document.getElementById('status');
 
-const textOverlay = document.getElementById('textOverlay');
-const textFont = document.getElementById('textFont');
-const textSize = document.getElementById('textSize');
-const textColor = document.getElementById('textColor');
-const textPosition = document.getElementById('textPosition');
-const gifQuality = document.getElementById('gifQuality');
-const gifSpeed = document.getElementById('gifSpeed');
+        const textOverlay = document.getElementById('textOverlay');
+        const textFont = document.getElementById('textFont');
+        const textSize = document.getElementById('textSize');
+        const textDecoration = document.getElementById('textDecoration');
+        const textColor = document.getElementById('textColor');
+        const textPosition = document.getElementById('textPosition');
+        const gifQuality = document.getElementById('gifQuality');
+        const gifSpeed = document.getElementById('gifSpeed');
+        const textBorderWidth = document.getElementById('textBorderWidth');
+        const textBorderColor = document.getElementById('textBorderColor');
+        const textWheight = document.getElementById('textWheight');
 
-function updateTextOverlay() {
-    textOverlayPreview.textContent = textOverlay.value;
-    textOverlayPreview.style.font = `${textSize.value}px ${textFont.value}`;
-    textOverlayPreview.style.color = textColor.value;
+        function updateTextOverlay() {
+            textOverlayPreview.textContent = textOverlay.value;
+            textOverlayPreview.style.font = `${textSize.value}px ${textFont.value}`;
+            textOverlayPreview.style.color = textColor.value;
+            textOverlayPreview.style.textDecoration = textDecoration.value;
+            textOverlayPreview.style.webkitTextStrokeWidth = `${textBorderWidth.value}px`;
+            textOverlayPreview.style.webkitTextStrokeColor = textBorderColor.value;
+            textOverlayPreview.style.fontWeight = textWheight.value;
+            textOverlayPreview.style.textShadow = `${textBorderWidth.value}px ${textBorderWidth.value}px ${textBorderWidth.value}px ${textBorderColor.value}`;
+            // Position the text
+            switch (textPosition.value) {
+                case 'top-left':
+                    textOverlayPreview.style.top = '10px';
+                    textOverlayPreview.style.left = '10px';
+                    textOverlayPreview.style.right = 'auto';
+                    textOverlayPreview.style.bottom = 'auto';
+                    textOverlayPreview.style.textAlign = 'left';
+                    break;
+                case 'top-right':
+                    textOverlayPreview.style.top = '10px';
+                    textOverlayPreview.style.right = '10px';
+                    textOverlayPreview.style.left = 'auto';
+                    textOverlayPreview.style.bottom = 'auto';
+                    textOverlayPreview.style.textAlign = 'right';
+                    break;
+                case 'bottom-left':
+                    textOverlayPreview.style.bottom = '10px';
+                    textOverlayPreview.style.left = '10px';
+                    textOverlayPreview.style.top = 'auto';
+                    textOverlayPreview.style.right = 'auto';
+                    textOverlayPreview.style.textAlign = 'left';
+                    break;
+                case 'bottom-right':
+                    textOverlayPreview.style.bottom = '10px';
+                    textOverlayPreview.style.right = '10px';
+                    textOverlayPreview.style.top = 'auto';
+                    textOverlayPreview.style.left = 'auto';
+                    textOverlayPreview.style.textAlign = 'right';
+                    break;
+                case 'center':
+                    textOverlayPreview.style.top = '50%';
+                    textOverlayPreview.style.left = '50%';
+                    textOverlayPreview.style.transform = 'translate(-50%, -50%)';
+                    textOverlayPreview.style.textAlign = 'center';
+                    break;
+            }
+        }
 
-    // Position the text
-    switch (textPosition.value) {
-        case 'top-left':
-            textOverlayPreview.style.top = '10px';
-            textOverlayPreview.style.left = '10px';
-            textOverlayPreview.style.right = 'auto';
-            textOverlayPreview.style.bottom = 'auto';
-            textOverlayPreview.style.textAlign = 'left';
-            break;
-        case 'top-right':
-            textOverlayPreview.style.top = '10px';
-            textOverlayPreview.style.right = '10px';
-            textOverlayPreview.style.left = 'auto';
-            textOverlayPreview.style.bottom = 'auto';
-            textOverlayPreview.style.textAlign = 'right';
-            break;
-        case 'bottom-left':
-            textOverlayPreview.style.bottom = '10px';
-            textOverlayPreview.style.left = '10px';
-            textOverlayPreview.style.top = 'auto';
-            textOverlayPreview.style.right = 'auto';
-            textOverlayPreview.style.textAlign = 'left';
-            break;
-        case 'bottom-right':
-            textOverlayPreview.style.bottom = '10px';
-            textOverlayPreview.style.right = '10px';
-            textOverlayPreview.style.top = 'auto';
-            textOverlayPreview.style.left = 'auto';
-            textOverlayPreview.style.textAlign = 'right';
-            break;
-        case 'center':
-            textOverlayPreview.style.top = '50%';
-            textOverlayPreview.style.left = '50%';
-            textOverlayPreview.style.transform = 'translate(-50%, -50%)';
-            textOverlayPreview.style.textAlign = 'center';
-            break;
+        videoInput.addEventListener('change', function (e) {
+            document.getElementsByClassName('settings')[0].style.display = 'block';
+            const file = e.target.files[0];
+            if (file) {
+                const videoUrl = URL.createObjectURL(file);
+                videoPreview.src = videoUrl;
+                videoPreview.style.display = 'block';
+                textOverlayPreview.style.display = 'block';
+                convertBtn.disabled = false;
+                updateTextOverlay();
+            }
+
+            // update text overlay when video is loaded so that settings will match the video dimensions
+            // update text color to match the video: get the average color of the video
+// update text color to match the video: get the average color of the video
+videoPreview.addEventListener('loadeddata', function () {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = videoPreview.videoWidth;
+    canvas.height = videoPreview.videoHeight;
+    ctx.drawImage(videoPreview, 0, 0, canvas.width, canvas.height);
+
+    // Debug: Check if the canvas is drawing correctly
+    document.body.appendChild(canvas); // Append canvas to body to visually inspect it
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    let r = 0, g = 0, b = 0;
+    for (let i = 0; i < imageData.length; i += 4) {
+        r += imageData[i];
+        g += imageData[i + 1];
+        b += imageData[i + 2];
     }
-}
-
-videoInput.addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        const videoUrl = URL.createObjectURL(file);
-        videoPreview.src = videoUrl;
-        videoPreview.style.display = 'block';
-        textOverlayPreview.style.display = 'block';
-        convertBtn.disabled = false;
-        updateTextOverlay();
-    }
+    r = Math.round(r / (imageData.length / 4));
+    g = Math.round(g / (imageData.length / 4));
+    b = Math.round(b / (imageData.length / 4));
+    console.log(r, g, b);
+    textColor.value = `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    console.log(textColor.value);
+    updateTextOverlay();
+    // Remove the canvas from the body
+    document.body.removeChild(canvas);
 });
+        });
 
-// Add event listeners to update text overlay when settings change
-textOverlay.addEventListener('input', updateTextOverlay);
-textFont.addEventListener('change', updateTextOverlay);
-textSize.addEventListener('input', updateTextOverlay);
-textColor.addEventListener('input', updateTextOverlay);
-textPosition.addEventListener('change', updateTextOverlay);
+        // Add event listeners to update text overlay when settings change
+        textOverlay.addEventListener('input', updateTextOverlay);
+        textFont.addEventListener('change', updateTextOverlay);
+        textSize.addEventListener('input', updateTextOverlay);
+        textColor.addEventListener('input', updateTextOverlay);
+        textPosition.addEventListener('change', updateTextOverlay);
+        textDecoration.addEventListener('change', updateTextOverlay);
+        textBorderWidth.addEventListener('input', updateTextOverlay);
+        textBorderColor.addEventListener('input', updateTextOverlay);
+        textWheight.addEventListener('change', updateTextOverlay);
 
-convertBtn.addEventListener('click', convertToGif);
+        convertBtn.addEventListener('click', convertToGif);
 
         function convertToGif() {
             const video = videoPreview;
@@ -417,13 +502,13 @@ convertBtn.addEventListener('click', convertToGif);
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
 
-            video.addEventListener('loadedmetadata', function() {
+            video.addEventListener('loadedmetadata', function () {
                 const aspectRatio = video.videoWidth / video.videoHeight;
                 canvas.width = 320;
                 canvas.height = Math.round(320 / aspectRatio);
 
                 // Draw the first frame to get the correct dimensions
-                requestAnimationFrame(function() {
+                requestAnimationFrame(function () {
                     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                     startConverting();
                 });
@@ -451,8 +536,14 @@ convertBtn.addEventListener('click', convertToGif);
 
                             // Add text overlay
                             if (textOverlay.value) {
-                                ctx.font = `${textSize.value}px ${textFont.value}`;
-                                ctx.fillStyle = textColor.value;
+ctx.font = `${textSize.value}px ${textFont.value}`;
+ctx.textBaseline = 'middle';
+ctx.fillStyle = textColor.value;
+ctx.strokeStyle = textBorderColor.value;
+ctx.lineWidth = textBorderWidth.value;
+
+// To achieve text stroke, you can use the strokeText method
+
                                 let x, y;
                                 switch (textPosition.value) {
                                     case 'top-left':
@@ -477,9 +568,10 @@ convertBtn.addEventListener('click', convertToGif);
                                         break;
                                 }
                                 ctx.fillText(textOverlay.value, x, y);
+                                ctx.strokeText(textOverlay.value, x, y);
                             }
 
-                            gif.addFrame(ctx, {copy: true, delay: 100});
+                            gif.addFrame(ctx, { copy: true, delay: 100 });
                             currentFrame++;
                             status.textContent = `Converting... ${Math.round((currentFrame / totalFrames) * 100)}%`;
                             addFrame();
@@ -489,11 +581,15 @@ convertBtn.addEventListener('click', convertToGif);
                     }
                 }
 
-                gif.on('finished', function(blob) {
+                gif.on('finished', function (blob) {
                     const gifUrl = URL.createObjectURL(blob);
                     outputGif.src = gifUrl;
                     outputGif.style.display = 'block';
                     status.textContent = 'Conversion complete! ';
+                    // hide video
+                    document.getElementById('videoContainer').style.display = 'none';
+                    // hide settings
+                    document.getElementsByClassName('settings')[0].style.display = 'none';
                     convertBtn.disabled = false;
                     // add download link
                     const a = document.createElement('a');
@@ -515,4 +611,5 @@ convertBtn.addEventListener('click', convertToGif);
 
     </script>
 </body>
+
 </html>
