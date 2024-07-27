@@ -818,7 +818,7 @@ function convertToGif() {
 
                     gif.addFrame(ctx, { copy: true, delay: 100 });
                     currentFrame++;
-                    status.textContent = `Converting... ${Math.round((currentFrame / totalFrames) * 100)}%`;
+                    status.textContent = `Converting... ${Math.min(Math.round((currentFrame / totalFrames) * 100),100)}%`;
 
                     if (currentFrame < totalFrames) {
                         addFrame();
