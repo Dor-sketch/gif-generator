@@ -498,6 +498,7 @@
 
                     <label for="textPosition">Text Position:</label>
                     <select id="textPosition">
+                        <option value="bottom-center">Bottom Center</option>
                         <option value="center">Center</option>
                         <option value="top-left">Top Left</option>
                         <option value="top-right">Top Right</option>
@@ -663,6 +664,12 @@
                     textOverlayPreview.style.transform = 'translate(-50%, -50%)';
                     textOverlayPreview.style.textAlign = 'center';
                     break;
+                case 'bottom-center':
+                    textOverlayPreview.style.bottom = '10px';
+                    textOverlayPreview.style.left = '50%';
+                    textOverlayPreview.style.transform = 'translateX(-50%)';
+                    textOverlayPreview.style.textAlign = 'center';
+                    break;
             }
         }
 
@@ -802,6 +809,10 @@
                                     case 'center':
                                         x = (canvas.width - ctx.measureText(textOverlay.value).width) / 2;
                                         y = (canvas.height + parseInt(textSize.value)) / 2;
+                                        break;
+                                    case 'bottom-center':
+                                        x = (canvas.width - ctx.measureText(textOverlay.value).width) / 2;
+                                        y = canvas.height - 10 - parseInt(textSize.value);
                                         break;
                                 }
                                 ctx.fillText(textOverlay.value, x, y);
