@@ -521,7 +521,7 @@
                     </select>
 
                     <label for="gifQuality">GIF Quality:</label>
-                    <input type="range" id="gifQuality" min="1" max="30" value="10">
+                    <input type="range" id="gifQuality" min="1" max="100" value="100">
 
                     <label for="gifSpeed">GIF Speed (FPS):</label>
                     <input type="number" id="gifSpeed" value="10">
@@ -707,7 +707,22 @@
                 updateTextOverlay();
                 // Remove the canvas from the body
                 document.body.removeChild(canvas);
+
+
+                // set default frames based on video duration: for longer videos, reduce the FPS
+                const duration = Math.round(videoPreview.duration);
+                if (duration > 10) {
+                    gifSpeed.value = 5;
+                }
+                else if (duration > 5) {
+                    gifSpeed.value = 10;
+                }
+                else {
+                    gifSpeed.value = 15;
+                }
             });
+
+
         });
 
         // Add event listeners to update text overlay when settings change
@@ -722,146 +737,149 @@
         textWheight.addEventListener('change', updateTextOverlay);
 
         convertBtn.addEventListener('click', convertToGif);
+function convertToGif() {
+    const video = videoPreview;
+    convertBtn.disabled = true;
+    status.textContent = 'Converting...';
 
-        function convertToGif() {
-            document.getElementById('convertBtn').style.display = 'none';
-            document.getElementById('openModalBtn').style.display = 'none';
-            const video = videoPreview;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
 
-            convertBtn.disabled = true;
-            status.textContent = 'Converting...';
+    video.addEventListener('loadedmetadata', function () {
+        const aspectRatio = video.videoWidth / video.videoHeight;
+        // choose size based on quality
+        let baseSize = video.videoWidth;
+        baseSize = Math.round(gifQuality.value / 100 * baseSize);
+        canvas.width = Math.min(640, baseSize);
+        canvas.height = Math.round(canvas.width / aspectRatio);
 
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
+        // Draw the first frame to get the correct dimensions
+        requestAnimationFrame(function () {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            startConverting();
+        });
+    });
 
-            video.addEventListener('loadedmetadata', function () {
-                const aspectRatio = video.videoWidth / video.videoHeight;
-                canvas.width = 320;
-                canvas.height = Math.round(320 / aspectRatio);
+    function startConverting() {
+        const gif = new GIF({
+            workers: 2,
+            quality: 10,
+            width: canvas.width,
+            height: canvas.height,
+        });
 
-                // Draw the first frame to get the correct dimensions
-                requestAnimationFrame(function () {
+        const duration = Math.round(video.duration);
+        const fps = parseInt(gifSpeed.value); // Frames per second
+        const totalFrames = duration * fps - 1;
+
+        let currentFrame = 0;
+
+        function addFrame() {
+            if (currentFrame < totalFrames) {
+                video.currentTime = (currentFrame / fps);
+                video.onseeked = () => {
                     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    startConverting();
-                });
-            });
 
-            function startConverting() {
-                const gif = new GIF({
-                    workers: 2,
-                    quality: parseInt(gifQuality.value),
-                    width: canvas.width,
-                    height: canvas.height,
-                });
+                    // Add text overlay
+                    if (textOverlay.value) {
+                        ctx.font = `${textWheight.value} ${textSize.value}px ${textFont.value}`;
+                        ctx.textBaseline = 'middle';
+                        ctx.fillStyle = textColor.value;
+                        ctx.strokeStyle = textBorderColor.value;
+                        ctx.lineWidth = textBorderWidth.value;
+                        // update font weight
 
-                const duration = Math.round(video.duration);
-                const fps = parseInt(gifSpeed.value); // Frames per second
-                const totalFrames = duration * fps;
+                        let x, y;
+                        switch (textPosition.value) {
+                            case 'top-left':
+                                x = 10;
+                                y = 30;
+                                break;
+                            case 'top-right':
+                                x = canvas.width - ctx.measureText(textOverlay.value).width - 10;
+                                y = 30;
+                                break;
+                            case 'bottom-left':
+                                x = 10;
+                                y = canvas.height - 10;
+                                break;
+                            case 'bottom-right':
+                                x = canvas.width - ctx.measureText(textOverlay.value).width - 10;
+                                y = canvas.height - 10;
+                                break;
+                            case 'center':
+                                x = (canvas.width - ctx.measureText(textOverlay.value).width) / 2;
+                                y = (canvas.height + parseInt(textSize.value)) / 2;
+                                break;
+                        }
+                        ctx.fillText(textOverlay.value, x, y);
+                        ctx.strokeText(textOverlay.value, x, y);
+                    }
 
-                let currentFrame = 0;
+                    gif.addFrame(ctx, { copy: true, delay: 100 });
+                    currentFrame++;
+                    status.textContent = `Converting... ${Math.round((currentFrame / totalFrames) * 100)}%`;
 
-                function addFrame() {
                     if (currentFrame < totalFrames) {
-                        video.currentTime = (currentFrame / fps);
-                        video.onseeked = () => {
-                            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-                            // Add text overlay
-                            if (textOverlay.value) {
-                                ctx.font = `${textSize.value}px ${textFont.value}`;
-                                ctx.textBaseline = 'middle';
-                                ctx.fillStyle = textColor.value;
-                                ctx.strokeStyle = textBorderColor.value;
-                                ctx.lineWidth = textBorderWidth.value;
-
-                                // To achieve text stroke, you can use the strokeText method
-
-                                let x, y;
-                                switch (textPosition.value) {
-                                    case 'top-left':
-                                        x = 10;
-                                        y = 30;
-                                        break;
-                                    case 'top-right':
-                                        x = canvas.width - ctx.measureText(textOverlay.value).width - 10;
-                                        y = 30;
-                                        break;
-                                    case 'bottom-left':
-                                        x = 10;
-                                        y = canvas.height - 10;
-                                        break;
-                                    case 'bottom-right':
-                                        x = canvas.width - ctx.measureText(textOverlay.value).width - 10;
-                                        y = canvas.height - 10;
-                                        break;
-                                    case 'center':
-                                        x = (canvas.width - ctx.measureText(textOverlay.value).width) / 2;
-                                        y = (canvas.height + parseInt(textSize.value)) / 2;
-                                        break;
-                                }
-                                ctx.fillText(textOverlay.value, x, y);
-                                ctx.strokeText(textOverlay.value, x, y);
-                            }
-
-                            gif.addFrame(ctx, { copy: true, delay: 100 });
-                            currentFrame++;
-                            status.textContent = `Converting... ${Math.round((currentFrame / totalFrames) * 100)}%`;
-                            addFrame();
-                        };
+                        addFrame();
                     } else {
                         gif.render();
                     }
-                }
-
-                gif.on('finished', function (blob) {
-                    const gifUrl = URL.createObjectURL(blob);
-
-                    // Create the download link
-                    const a = document.createElement('a');
-                    a.href = gifUrl;
-                    a.download = 'output.gif';
-
-                    // Create the GIF image
-                    const gifImage = document.createElement('img');
-                    gifImage.src = gifUrl;
-                    gifImage.style.display = 'block';
-                    gifImage.style.margin = '20px auto';
-                    gifImage.style.maxWidth = '100%';
-
-                    // Append the GIF image inside the download link
-                    a.appendChild(gifImage);
-
-                    // Update the status text and append the download link
-                    status.textContent = 'Done! Click the GIF to download.';
-                    status.appendChild(a);
-
-                    // Hide video and settings
-                    document.getElementById('videoContainer').style.display = 'none';
-                    document.getElementById('textArea').style.display = 'none';
-                    // Enable the convert button
-                    convertBtn.disabled = false;
-
-                    // add refresh button
-                    const refreshBtn = document.createElement('button');
-                    refreshBtn.textContent = 'Convert Another Video';
-                    refreshBtn.style.display = 'block';
-                    refreshBtn.style.margin = '20px auto';
-                    refreshBtn.addEventListener('click', () => {
-                        location.reload();
-                    });
-                    status.appendChild(refreshBtn);
-
-                });
-
-                video.currentTime = 0;
-                addFrame();
-            }
-
-            // Trigger the loadedmetadata event if the video is already loaded
-            if (video.readyState >= 2) {
-                video.dispatchEvent(new Event('loadedmetadata'));
+                };
+            } else {
+                gif.render();
             }
         }
+
+        gif.on('finished', function (blob) {
+            const gifUrl = URL.createObjectURL(blob);
+
+            // Create the download link
+            const a = document.createElement('a');
+            a.href = gifUrl;
+            a.download = 'output.gif';
+
+            // Create the GIF image
+            const gifImage = document.createElement('img');
+            gifImage.src = gifUrl;
+            gifImage.style.display = 'block';
+            gifImage.style.margin = '20px auto';
+            gifImage.style.maxWidth = '100%';
+
+            // Append the GIF image inside the download link
+            a.appendChild(gifImage);
+
+            // Update the status text and append the download link
+            status.textContent = 'Done! Click the GIF to download.';
+            status.appendChild(a);
+
+            // Hide video and settings
+            document.getElementById('videoContainer').style.display = 'none';
+            document.getElementById('textArea').style.display = 'none';
+            // Enable the convert button
+            convertBtn.disabled = false;
+
+            // add refresh button
+            const refreshBtn = document.createElement('button');
+            refreshBtn.textContent = 'Convert Another Video';
+            refreshBtn.style.display = 'block';
+            refreshBtn.style.margin = '20px auto';
+            refreshBtn.addEventListener('click', () => {
+                location.reload();
+            });
+            status.appendChild(refreshBtn);
+
+        });
+
+        video.currentTime = 0;
+        addFrame();
+    }
+
+    // Trigger the loadedmetadata event if the video is already loaded
+    if (video.readyState >= 2) {
+        video.dispatchEvent(new Event('loadedmetadata'));
+    }
+}
 
     </script>
 </body>
