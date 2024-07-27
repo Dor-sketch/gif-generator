@@ -439,11 +439,10 @@
             <span id="fileName" class="file-name">No file selected</span>
         </div>
         <div id="videoContainer" style="position: relative;">
-            <video id="videoPreview" controls style="display: none;" class="preview" autoplay muted loop
-                playsinline></video>
+            <video id="videoPreview" controls style="display: none;" class="preview" playsinline></video>
             <div id="textOverlayPreview" style="position: absolute; pointer-events: none;"></div>
         </div>
-<button id="convertBtn" disabled style="display: none;">
+<button id="convertBtn" disabled style="display: none;" onclick="convertToGif()" title="Convert to GIF">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
         <path d="M14.5 2.5l1 3.5h3.5l-2.75 2 1 3.5-2.75-2-2.75 2 1-3.5-2.75-2h3.5l1-3.5zm-1.5 9l-9 9 1.5 1.5 9-9-1.5-1.5zm-6 6l-1.5 1.5 1.5 1.5 1.5-1.5-1.5-1.5z"/>
     </svg>
@@ -736,8 +735,8 @@
         textBorderColor.addEventListener('input', updateTextOverlay);
         textWheight.addEventListener('change', updateTextOverlay);
 
-        convertBtn.addEventListener('click', convertToGif);
 function convertToGif() {
+    console.log('Converting to GIF...');
     const video = videoPreview;
     convertBtn.disabled = true;
     status.textContent = 'Converting...';
