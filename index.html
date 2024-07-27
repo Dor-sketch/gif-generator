@@ -1002,33 +1002,18 @@
             shareButton.addEventListener('click', async () => {
                 try {
                     const file = new File([blob], 'generated.gif', { type: 'image/gif' });
-                    await navigator.share({
-                        files: [file],
-                        title: 'Check out my GIF!',
-                        text: 'I created this GIF using the online converter.'
-                    });
+await navigator.share({
+    files: [file],
+    title: 'Awesome GIF Created!',
+    text: 'I just created this amazing GIF using the online GIF converter. Check it out here: https://dorpascal.com/gif-generator',
+    url: 'https://dorpascal.com/gif-generator'
+});
                 } catch (error) {
                     console.log('Sharing failed', error);
                 }
             });
             status.appendChild(shareButton);
         }
-
-        // Add copy link to clipboard for email or other sharing
-        const copyLinkButton = document.createElement('button');
-        copyLinkButton.textContent = 'Copy Link to Share';
-        copyLinkButton.style.display = 'block';
-        copyLinkButton.style.margin = '20px auto';
-        copyLinkButton.addEventListener('click', () => {
-            const textarea = document.createElement('textarea');
-            textarea.value = base64data;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-            alert('Link copied to clipboard! You can now paste it into an email or message.');
-        });
-        status.appendChild(copyLinkButton);
     };
     reader.readAsDataURL(blob);
 });
